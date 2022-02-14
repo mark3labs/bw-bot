@@ -26,10 +26,15 @@ export const loadRecruits = async (amount: number): Promise<Recruit[]> => {
 }
 
 export const loadRecruit = async (account: number): Promise<Recruit> => {
-  let wallet = ethers.Wallet.fromMnemonic(
-    process.env.MNEMONIC,
-    `m/44'/60'/0'/0/${account}`
-  )
+  let wallet
+  if (process.env[`CUSTOM_${account}`]) {
+    wallet = new ethers.Wallet(process.env[`CUSTOM_${account}`])
+  } else {
+    wallet = ethers.Wallet.fromMnemonic(
+      process.env.MNEMONIC,
+      `m/44'/60'/0'/0/${account}`
+    )
+  }
   wallet = wallet.connect(provider)
   const address = await wallet.getAddress()
   const id = await getRecruitId(address)
@@ -59,7 +64,7 @@ export const showRecruits = (recruits: Recruit[]): void => {
   let idx = 0
   for (const r of recruits) {
     accounts.push([
-      idx.toString(),
+      recruits.length > 1 ? idx.toString() : '*',
       r.address,
       utils.formatEther(r.ethBalance),
       utils.formatEther(r.magicBalance),
@@ -72,6 +77,7 @@ export const showRecruits = (recruits: Recruit[]): void => {
     idx++
   }
   print.table(accounts, { format: 'markdown' })
+  print.newline()
 }
 
 // Restart Quest
@@ -144,7 +150,7 @@ const getRecruitId = async (address: string): Promise<number> => {
     }`,
   })
 
-  if (ok) {
+  if (ok && data['data']['user']) {
     return parseInt(data['data']['user']['recruit']['tokenId'])
   }
   return 0

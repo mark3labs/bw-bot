@@ -14,25 +14,47 @@ module.exports = (toolbox: GluegunToolbox) => {
     if (recruit.loot[item.shortName] > 0) {
       try {
         const floorPrices: ConsumableFloorPrices = await getFloorPrices()
-        const tx = await marketPlace
-          .connect(recruit.wallet)
-          .createListing(
-            consumables.address,
-            item.id,
-            recruit.loot[item.shortName],
-            floorPrices[item.shortName],
-            moment().add(3, 'months').unix()
-          )
-        await tx.wait()
-        print.info(
-          `Listed ${recruit.loot[item.shortName]} ${item.emoji} ${
-            item.name
-          } for sale for ${recruit.address} - ${recruit.id}`
+        const listing = await marketPlace.listings(
+          consumables.address,
+          item.id,
+          recruit.address
         )
-        sendNotification(
-          `Listed ${recruit.loot[item.shortName]} ${item.emoji} ${
-            item.name
-          } for sale for ${recruit.address} - ${recruit.id}`
+
+        const qtyListed = listing[0].toNumber()
+
+        const qtyToList = recruit.loot[item.shortName]
+
+        if (qtyToList === qtyListed) return
+
+        let tx
+        if (qtyToList > qtyListed && qtyListed > 0) {
+          tx = await marketPlace
+            .connect(recruit.wallet)
+            .updateListing(
+              consumables.address,
+              item.id,
+              qtyToList,
+              floorPrices[item.shortName],
+              moment().add(3, 'months').unix()
+            )
+          await tx.wait()
+        } else {
+          tx = await marketPlace
+            .connect(recruit.wallet)
+            .createListing(
+              consumables.address,
+              item.id,
+              qtyToList,
+              floorPrices[item.shortName],
+              moment().add(3, 'months').unix()
+            )
+          await tx.wait()
+        }
+        print.info(
+          `Listed ${qtyToList} ${item.emoji} ${item.name} for sale for ${recruit.address} - ${recruit.id}`
+        )
+        await sendNotification(
+          `Listed ${qtyToList} ${item.emoji} ${item.name} for sale for ${recruit.address} - ${recruit.id}`
         )
       } catch (e) {
         print.error(`Error: ${e.code}`)

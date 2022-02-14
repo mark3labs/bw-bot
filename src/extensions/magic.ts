@@ -8,7 +8,7 @@ import { Recruit } from '../types'
 // add your CLI-specific functionality here, which will then be accessible
 // to your commands
 module.exports = (toolbox: GluegunToolbox) => {
-  const { print } = toolbox
+  const { print, parameters } = toolbox
   toolbox.magic = {
     sell: async (recruit: Recruit): Promise<void> => {
       if (recruit.magicBalance.isZero()) {
@@ -31,9 +31,12 @@ module.exports = (toolbox: GluegunToolbox) => {
           )
         await tx.wait()
         print.success(`${recruit.address} - ${recruit.id} sold MAGIC!`)
-        sendNotification(`${recruit.address} - ${recruit.id} sold MAGIC!`)
+        await sendNotification(`${recruit.address} - ${recruit.id} sold MAGIC!`)
       } catch (e) {
-        print.error('Error selling $MAGIC!')
+        print.error(`Error: ${e.code}`)
+        if (parameters.options.debug) {
+          print.info(e)
+        }
       }
     },
   }

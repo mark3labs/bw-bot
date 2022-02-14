@@ -1,11 +1,11 @@
 import { GluegunCommand } from 'gluegun'
 import { exit } from 'process'
-import { loadRecruit } from '../lib/utils'
+import { loadRecruit, showRecruits } from '../lib/utils'
 
 const command: GluegunCommand = {
-  name: 'list-items',
+  name: 'info',
   run: async (toolbox) => {
-    const { banner, parameters, marketplace, print } = toolbox
+    const { banner, print, parameters } = toolbox
 
     banner()
 
@@ -16,13 +16,11 @@ const command: GluegunCommand = {
       exit(1)
     }
 
-    const spinner = print.spin('Loading recruit...').start()
+    const spinner = toolbox.print.spin(`Loading recruit...\n`).start()
     const recruit = await loadRecruit(account)
-    spinner.succeed('Loaded!')
 
-    spinner.start('Listing items...')
-    await marketplace.listItems(recruit)
-    spinner.succeed('Done!')
+    showRecruits([recruit])
+    spinner.succeed('Recruit loaded!')
     exit(0)
   },
 }

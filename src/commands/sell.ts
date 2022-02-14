@@ -20,6 +20,7 @@ const command: GluegunCommand = {
     spinner.start('Selling $MAGIC...')
     await magic.sell(recruit)
     spinner.succeed('Done!')
+    exit(0)
   },
 }
 

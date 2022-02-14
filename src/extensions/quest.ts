@@ -10,6 +10,7 @@ import { Recruit } from '../types'
 module.exports = (toolbox: GluegunToolbox) => {
   const { print } = toolbox
   toolbox.quest = {
+    // Restart Quest
     restartQuest: async (recruit: Recruit): Promise<void> => {
       try {
         const questStartTime = await quest.tokenIdToQuestStartTime(recruit.id)
@@ -31,6 +32,8 @@ module.exports = (toolbox: GluegunToolbox) => {
         print.error(`Error: ${e.code}`)
       }
     },
+
+    // Collect Loot
     collectLoot: async (recruit: Recruit): Promise<void> => {
       let readyToReveal
       try {

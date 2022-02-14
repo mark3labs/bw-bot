@@ -3,15 +3,11 @@ import { GluegunToolbox } from 'gluegun'
 // add your CLI-specific functionality here, which will then be accessible
 // to your commands
 module.exports = (toolbox: GluegunToolbox) => {
-  toolbox.foo = () => {
-    toolbox.print.info('called foo extension')
+  const { print } = toolbox
+  toolbox.banner = () => {
+    print.info(
+      print.colors.bgBlue(' BridgeWorld Bot ') + print.colors.bgCyan(' 1.0 ')
+    )
+    print.newline()
   }
-
-  // enable this if you want to read configuration in from
-  // the current folder's package.json (in a "bw-bot" property),
-  // bw-bot.config.json, etc.
-  // toolbox.config = {
-  //   ...toolbox.config,
-  //   ...toolbox.config.loadConfig("bw-bot", process.cwd())
-  // }
 }
