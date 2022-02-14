@@ -6,7 +6,10 @@ import { barracks, magicToken } from '../lib/contracts'
 const command: GluegunCommand = {
   name: 'init',
   run: async (toolbox) => {
-    const { print } = toolbox
+    const { print, banner } = toolbox
+
+    banner()
+
     const account = toolbox.parameters.first
 
     if (typeof account !== 'number') {

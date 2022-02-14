@@ -5,7 +5,10 @@ import { loadRecruit, showRecruits, sleep } from '../lib/utils'
 const command: GluegunCommand = {
   name: 'quest',
   run: async (toolbox) => {
-    const { parameters, print, quest } = toolbox
+    const { banner, parameters, print, quest } = toolbox
+
+    banner()
+
     const account = parameters.first
 
     if (typeof account !== 'number') {
