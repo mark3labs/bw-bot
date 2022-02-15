@@ -1,15 +1,8 @@
-import { constants, ethers, utils } from 'ethers'
+import { ethers, utils } from 'ethers'
 import { http, print } from 'gluegun'
 import * as moment from 'moment'
 import { Balances, ConsumableFloorPrices, Recruit } from '../types'
-import {
-  barracks,
-  consumables,
-  magicToken,
-  marketPlace,
-  quest,
-  sushi,
-} from './contracts'
+import { barracks, consumables, magicToken, quest } from './contracts'
 import { Client, Intents } from 'discord.js'
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
@@ -25,6 +18,7 @@ export const loadRecruits = async (amount: number): Promise<Recruit[]> => {
   return recruits
 }
 
+// Load multiple recruits
 export const loadRecruit = async (account: number): Promise<Recruit> => {
   let wallet
   if (process.env[`CUSTOM_${account}`]) {
@@ -186,97 +180,6 @@ export const getBalances = async (address: string): Promise<Balances> => {
   }
 }
 
-export const listAllItems = async (recruit: Recruit): Promise<void> => {
-  const dateTime = new Date()
-
-  if (dateTime.getHours() !== 9 || dateTime.getMinutes() > 59) return
-
-  const floorPrices: ConsumableFloorPrices = await getFloorPrices()
-
-  console.log('Checking floor prices...')
-  if (!floorPrices) return
-  console.log('Checked!')
-
-  const isApproved = await consumables.isApprovedForAll(
-    recruit.address,
-    marketPlace.address
-  )
-
-  let tx
-  if (!isApproved) {
-    try {
-      print.info('Setting marketplace approval...')
-      tx = await consumables
-        .connect(recruit.wallet)
-        .setApprovalForAll(marketPlace.address, true)
-      await tx.wait()
-      print.info('Approved!')
-    } catch (_) {}
-  }
-
-  if (recruit.loot.starlight > 0) {
-    try {
-      tx = await marketPlace
-        .connect(recruit.wallet)
-        .createListing(
-          consumables.address,
-          8,
-          recruit.loot.starlight,
-          floorPrices.starlight,
-          moment().add(3, 'months').unix()
-        )
-      await tx.wait()
-      print.info(
-        `Listed ${recruit.loot.starlight} 🌟 Essence of Starlight for sale for ${recruit.address} - ${recruit.id}`
-      )
-      sendNotification(
-        `Listed ${recruit.loot.starlight} 🌟 Essence of Starlight for sale for ${recruit.address} - ${recruit.id}`
-      )
-    } catch (_) {}
-  }
-
-  if (recruit.loot.shards > 0) {
-    try {
-      tx = await marketPlace
-        .connect(recruit.wallet)
-        .createListing(
-          consumables.address,
-          9,
-          recruit.loot.shards,
-          floorPrices.shards,
-          moment().add(3, 'months').unix()
-        )
-      await tx.wait()
-      print.info(
-        `Listed ${recruit.loot.shards} 💎 Prism Shards for sale for ${recruit.address} - ${recruit.id}`
-      )
-      sendNotification(
-        `Listed ${recruit.loot.shards} 💎 Prism Shards for sale for ${recruit.address} - ${recruit.id}`
-      )
-    } catch (_) {}
-  }
-  if (recruit.loot.locks > 0) {
-    try {
-      tx = await marketPlace
-        .connect(recruit.wallet)
-        .createListing(
-          consumables.address,
-          10,
-          recruit.loot.locks,
-          floorPrices.locks,
-          moment().add(3, 'months').unix()
-        )
-      await tx.wait()
-      print.info(
-        `Listed ${recruit.loot.locks} 🔒 Universal Locks for sale for ${recruit.address} - ${recruit.id}`
-      )
-      sendNotification(
-        `Listed ${recruit.loot.locks} 🔒 Universal Locks for sale for ${recruit.address} - ${recruit.id}`
-      )
-    } catch (_) {}
-  }
-}
-
 export const getFloorPrices =
   async (): Promise<ConsumableFloorPrices | null> => {
     const client = http.create({ baseURL: process.env.TREASURE_SUBGRAPH_URL })
@@ -316,33 +219,10 @@ export const getFloorPrices =
     return null
   }
 
-export const sellMagic = async (recruit: Recruit): Promise<void> => {
-  if (recruit.magicBalance.isZero()) {
-    print.warning('Nothing to sell.')
-    return
-  }
-  try {
-    let tx = await magicToken
-      .connect(recruit.wallet)
-      .approve(sushi.address, constants.MaxUint256)
-    await tx.wait()
-    tx = await sushi
-      .connect(recruit.wallet)
-      .swapExactTokensForETH(
-        recruit.magicBalance,
-        utils.parseEther('0.0001'),
-        [magicToken.address, '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'],
-        recruit.address,
-        moment().add(1, 'minute').unix()
-      )
-    await tx.wait()
-    print.success(`${recruit.address} - ${recruit.id} sold MAGIC!`)
-    sendNotification(`${recruit.address} - ${recruit.id} sold MAGIC!`)
-  } catch (e) {
-    print.error('Error selling $MAGIC!')
-  }
-}
-
 export const sleep = (ms: number): Promise<unknown> => {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export const shortAddr = (addr: string): string => {
+  return addr.substring(0, 6) + '...' + addr.substring(addr.length - 5)
 }
