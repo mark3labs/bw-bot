@@ -8,14 +8,35 @@ import { Recruit } from '../types'
 // add your CLI-specific functionality here, which will then be accessible
 // to your commands
 module.exports = (toolbox: GluegunToolbox) => {
-  const { print } = toolbox
+  const { print, http } = toolbox
+
+  const getEndtime = async (id: number): Promise<number> => {
+    const client = http.create({
+      baseURL: process.env.BRIDGEWORLD_SUBGRAPH_URL,
+    })
+
+    const { data, ok } = await client.post('', {
+      query: `{
+        quest(id: "0xda3cad5e4f40062ceca6c1b979766bc0baed8e33-0x${id.toString(
+          16
+        )}") {
+          endTimestamp
+        }
+      }`,
+    })
+
+    if (ok) {
+      return parseInt(data['data']['quest']['endTimestamp']) / 1000
+    }
+    return null
+  }
+
   toolbox.quest = {
     // Restart Quest
     restartQuest: async (recruit: Recruit): Promise<void> => {
       try {
-        const questStartTime = await quest.tokenIdToQuestStartTime(recruit.id)
-        const startTime = moment.unix(parseInt(questStartTime.toString()))
-        if (moment().isAfter(startTime.add(8, 'hours'))) {
+        const endTime = moment.unix(await getEndtime(recruit.id))
+        if (moment().isAfter(endTime)) {
           print.info(`Restarting quest for ${recruit.address} - ${recruit.id}`)
           const tx = await quest
             .connect(recruit.wallet)
