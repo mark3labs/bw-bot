@@ -1,7 +1,7 @@
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
 import { consumables, marketPlace } from '../lib/contracts'
-import { getFloorPrices, sendNotification } from '../lib/utils'
+import { getFloorPrices, sendNotification, shortAddr } from '../lib/utils'
 import { ConsumableFloorPrices, Recruit } from '../types'
 
 // add your CLI-specific functionality here, which will then be accessible
@@ -51,10 +51,16 @@ module.exports = (toolbox: GluegunToolbox) => {
           await tx.wait()
         }
         print.info(
-          `Listed ${qtyToList} ${item.emoji} ${item.name} for sale for ${recruit.address} - ${recruit.id}`
+          `Listed ${qtyToList} ${item.emoji} ${
+            item.name
+          } for sale for ${shortAddr(recruit.address)} - ${recruit.id}`
         )
         await sendNotification(
-          `Listed ${qtyToList} ${item.emoji} ${item.name} for sale for ${recruit.address} - ${recruit.id}`
+          `Listed \`${qtyToList}\` ${item.emoji} \`${
+            item.name
+          }\` for sale for \`${shortAddr(recruit.address)}\` - \`${
+            recruit.id
+          }\``
         )
       } catch (e) {
         print.error(`Error: ${e.code}`)

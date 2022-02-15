@@ -2,7 +2,7 @@ import { utils } from 'ethers'
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
 import { quest } from '../lib/contracts'
-import { getBalances, sendNotification } from '../lib/utils'
+import { getBalances, sendNotification, shortAddr } from '../lib/utils'
 import { Recruit } from '../types'
 
 // add your CLI-specific functionality here, which will then be accessible
@@ -37,16 +37,22 @@ module.exports = (toolbox: GluegunToolbox) => {
       try {
         const endTime = moment.unix(await getEndtime(recruit.id))
         if (moment().isAfter(endTime)) {
-          print.info(`Restarting quest for ${recruit.address} - ${recruit.id}`)
+          print.info(
+            `Restarting quest for ${shortAddr(recruit.address)} - ${recruit.id}`
+          )
           const tx = await quest
             .connect(recruit.wallet)
             .restartTokenQuests([recruit.id], [0], [1])
           await tx.wait()
           print.success(
-            `🔃 Restarted quest for ${recruit.address} - ${recruit.id}`
+            `🔃 Restarted quest for ${shortAddr(recruit.address)} - ${
+              recruit.id
+            }`
           )
           await sendNotification(
-            `🔃 Restarted quest for ${recruit.address} - ${recruit.id}`
+            `🔃 Restarted quest for \`${shortAddr(recruit.address)}\` - \`${
+              recruit.id
+            }\``
           )
         }
       } catch (e) {
@@ -70,7 +76,9 @@ module.exports = (toolbox: GluegunToolbox) => {
           await tx.wait()
           recruit.loot = await getBalances(recruit.address)
           print.success(
-            `💰 Collected loot for ${recruit.address} - ${recruit.id}`
+            `💰 Collected loot for ${shortAddr(recruit.address)} - ${
+              recruit.id
+            }`
           )
           print.success(
             `🔷 = ${utils.formatEther(
@@ -80,14 +88,16 @@ module.exports = (toolbox: GluegunToolbox) => {
             } 💎 = ${recruit.loot.shards} 🔒 = ${recruit.loot.locks}`
           )
           await sendNotification(
-            `💰 Collected loot for ${recruit.address} - ${recruit.id}`
+            `💰 Collected loot for \`${shortAddr(recruit.address)}\` - \`${
+              recruit.id
+            }\``
           )
           await sendNotification(
-            `🔷 = ${utils.formatEther(
+            `🔷 = \`${utils.formatEther(
               recruit.ethBalance
-            )} 🪄= ${utils.formatEther(recruit.magicBalance)} 🌟 = ${
+            )}\` 🪄= \`${utils.formatEther(recruit.magicBalance)}\` 🌟 = \`${
               recruit.loot.starlight
-            } 💎 = ${recruit.loot.shards} 🔒 = ${recruit.loot.locks}`
+            }\` 💎 = \`${recruit.loot.shards}\` 🔒 = \`${recruit.loot.locks}\``
           )
         } catch (e) {
           print.error(`Error: ${e.code}`)

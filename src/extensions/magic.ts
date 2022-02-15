@@ -2,7 +2,7 @@ import { constants, utils } from 'ethers'
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
 import { magicToken, sushi } from '../lib/contracts'
-import { sendNotification } from '../lib/utils'
+import { sendNotification, shortAddr } from '../lib/utils'
 import { Recruit } from '../types'
 
 // add your CLI-specific functionality here, which will then be accessible
@@ -30,8 +30,12 @@ module.exports = (toolbox: GluegunToolbox) => {
             moment().add(1, 'minute').unix()
           )
         await tx.wait()
-        print.success(`${recruit.address} - ${recruit.id} sold MAGIC!`)
-        await sendNotification(`${recruit.address} - ${recruit.id} sold MAGIC!`)
+        print.success(
+          `${shortAddr(recruit.address)} - ${recruit.id} sold MAGIC!`
+        )
+        await sendNotification(
+          `\`${shortAddr(recruit.address)}\` - \`${recruit.id}\` sold MAGIC!`
+        )
       } catch (e) {
         print.error(`Error: ${e.code}`)
         if (parameters.options.debug) {
