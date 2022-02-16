@@ -30,12 +30,14 @@ const command: GluegunCommand = {
 const parseCommand = async (message: Message, toolbox: GluegunToolbox) => {
   try {
     if (message.content.startsWith('!ping')) {
+      message.channel.sendTyping()
       print.info(`PING: ${new Date().toUTCString()}`)
       message.reply('pong!')
       return
     }
 
     if (message.content.startsWith('!info')) {
+      message.channel.sendTyping()
       const id = message.content.split(' ')[1]
       const recruit = await loadRecruit(parseInt(id))
       message.reply(`
@@ -49,18 +51,21 @@ const parseCommand = async (message: Message, toolbox: GluegunToolbox) => {
     }
 
     if (message.content.startsWith('!list')) {
+      message.channel.sendTyping()
       const id = message.content.split(' ')[1]
       const recruit = await loadRecruit(parseInt(id))
       toolbox.marketplace.listItems(recruit)
     }
 
     if (message.content.startsWith('!sell')) {
+      message.channel.sendTyping()
       const id = message.content.split(' ')[1]
       const recruit = await loadRecruit(parseInt(id))
       toolbox.magic.sell(recruit)
     }
 
     if (message.content.startsWith('!eth')) {
+      message.channel.sendTyping()
       const count = parseInt(message.content.split(' ')[1]) || 5
       const recruits = await loadRecruits(count)
       let total = ethers.BigNumber.from('0')
@@ -71,6 +76,7 @@ const parseCommand = async (message: Message, toolbox: GluegunToolbox) => {
     }
 
     if (message.content.startsWith('!magic')) {
+      message.channel.sendTyping()
       const count = parseInt(message.content.split(' ')[1]) || 5
       const recruits = await loadRecruits(count)
       let total = ethers.BigNumber.from('0')
