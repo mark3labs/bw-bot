@@ -31,10 +31,14 @@ module.exports = (toolbox: GluegunToolbox) => {
           )
         await tx.wait()
         print.success(
-          `${shortAddr(recruit.address)} - ${recruit.id} sold MAGIC!`
+          `${shortAddr(recruit.address)} - ${
+            recruit.id
+          } sold ${utils.formatEther(recruit.magicBalance)} $MAGIC!`
         )
         await sendNotification(
-          `\`${shortAddr(recruit.address)}\` - \`${recruit.id}\` sold MAGIC!`
+          `\`${shortAddr(recruit.address)}\` - \`${
+            recruit.id
+          }\` sold \`${utils.formatEther(recruit.magicBalance)}\` $MAGIC!`
         )
       } catch (e) {
         print.error(`Error: ${e.code}`)

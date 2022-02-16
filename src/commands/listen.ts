@@ -1,7 +1,7 @@
 import { GluegunCommand, GluegunToolbox, print } from 'gluegun'
 import { Client, Message } from 'discord.js'
-import { loadRecruit, shortAddr } from '../lib/utils'
-import { utils } from 'ethers'
+import { loadRecruit, loadRecruits, shortAddr } from '../lib/utils'
+import { ethers, utils } from 'ethers'
 
 const command: GluegunCommand = {
   name: 'listen',
@@ -58,6 +58,26 @@ const parseCommand = async (message: Message, toolbox: GluegunToolbox) => {
       const id = message.content.split(' ')[1]
       const recruit = await loadRecruit(parseInt(id))
       toolbox.magic.sell(recruit)
+    }
+
+    if (message.content.startsWith('!eth')) {
+      const count = parseInt(message.content.split(' ')[1]) || 5
+      const recruits = await loadRecruits(count)
+      let total = ethers.BigNumber.from('0')
+      for (const r of recruits) {
+        total = r.ethBalance.add(total)
+      }
+      message.reply(`Total ETH: ${utils.formatEther(total)}`)
+    }
+
+    if (message.content.startsWith('!magic')) {
+      const count = parseInt(message.content.split(' ')[1]) || 5
+      const recruits = await loadRecruits(count)
+      let total = ethers.BigNumber.from('0')
+      for (const r of recruits) {
+        total = r.magicBalance.add(total)
+      }
+      message.reply(`Total $MAGIC: ${utils.formatEther(total)}`)
     }
   } catch (e) {
     message.reply('Error running command...')

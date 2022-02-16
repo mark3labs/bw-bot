@@ -17,7 +17,7 @@ const command: GluegunCommand = {
     }
 
     const spinner = toolbox.print.spin(`Loading roster...\n`).start()
-    const recruits = await loadRecruits(parseInt(amount) || 3)
+    const recruits = await loadRecruits(parseInt(amount) || 5)
 
     showRecruits(recruits)
     spinner.succeed('Roster loaded!')
