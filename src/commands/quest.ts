@@ -22,7 +22,7 @@ const command: GluegunCommand = {
     }
 
     const spinner = print.spin('Loading recruit...').start()
-    const recruit = await loadRecruit(account)
+    let recruit = await loadRecruit(account)
     print.newline()
     print.newline()
     showRecruits([recruit])
@@ -34,6 +34,7 @@ const command: GluegunCommand = {
       await quest.restartQuest(recruit)
       await quest.collectLoot(recruit)
       spinner.text = 'Questing! ⚔️'
+      recruit = await loadRecruit(account)
       await sleep(60000)
     }
   },
