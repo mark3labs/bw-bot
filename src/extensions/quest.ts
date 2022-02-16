@@ -1,8 +1,8 @@
 import { utils } from 'ethers'
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
+import { shortAddr, sendNotification, getBalances } from '../lib/common'
 import { quest } from '../lib/contracts'
-import { getBalances, sendNotification, shortAddr } from '../lib/utils'
 import { Recruit } from '../types'
 
 // add your CLI-specific functionality here, which will then be accessible

@@ -1,11 +1,15 @@
 import { GluegunCommand } from 'gluegun'
 import { exit } from 'process'
-import { loadRecruit, showRecruits } from '../lib/utils'
 
 const command: GluegunCommand = {
   name: 'info',
   run: async (toolbox) => {
-    const { banner, print, parameters } = toolbox
+    const {
+      banner,
+      print,
+      parameters,
+      utils: { showRecruits, loadRecruit },
+    } = toolbox
 
     banner()
 

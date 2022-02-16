@@ -1,14 +1,15 @@
 import { constants, utils } from 'ethers'
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
+import { shortAddr, sendNotification } from '../lib/common'
 import { magicToken, sushi } from '../lib/contracts'
-import { sendNotification, shortAddr } from '../lib/utils'
 import { Recruit } from '../types'
 
 // add your CLI-specific functionality here, which will then be accessible
 // to your commands
 module.exports = (toolbox: GluegunToolbox) => {
   const { print, parameters } = toolbox
+
   toolbox.magic = {
     sell: async (recruit: Recruit): Promise<void> => {
       if (recruit.magicBalance.isZero()) {

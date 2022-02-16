@@ -1,7 +1,7 @@
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
+import { getFloorPrices, shortAddr, sendNotification } from '../lib/common'
 import { consumables, marketPlace } from '../lib/contracts'
-import { getFloorPrices, sendNotification, shortAddr } from '../lib/utils'
 import { ConsumableFloorPrices, Recruit } from '../types'
 
 // add your CLI-specific functionality here, which will then be accessible
