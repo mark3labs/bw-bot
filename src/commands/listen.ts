@@ -1,6 +1,9 @@
 import { GluegunCommand, GluegunToolbox } from 'gluegun'
 import { Client, Message } from 'discord.js'
 import { ethers, utils } from 'ethers'
+import * as os from 'os'
+import * as path from 'path'
+import { BWConfig } from '../types'
 
 const command: GluegunCommand = {
   name: 'listen',
@@ -10,7 +13,12 @@ const command: GluegunCommand = {
       banner,
       print,
       utils: { loadRecruit, loadRecruits, shortAddr },
+      config: { loadConfig },
     } = toolbox
+
+    const homedir = os.homedir()
+    const CONFIG_DIR = path.join(homedir, '.config', 'bwbot')
+    const bwCfg: BWConfig = loadConfig('bwbot', CONFIG_DIR)
 
     banner()
 
@@ -90,7 +98,7 @@ const command: GluegunCommand = {
       print.spin('Waiting for commands...')
     })
 
-    discord.login(process.env.DISCORD_TOKEN)
+    discord.login(bwCfg.discord_token)
   },
 }
 

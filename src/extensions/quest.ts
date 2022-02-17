@@ -1,5 +1,6 @@
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
+import { BRIDGEWORLD_SUBGRAPH_URL } from '../lib/constants'
 import { quest } from '../lib/contracts'
 import { Recruit } from '../types'
 
@@ -10,7 +11,7 @@ module.exports = (toolbox: GluegunToolbox) => {
 
   const getEndtime = async (id: number): Promise<number> => {
     const client = http.create({
-      baseURL: process.env.BRIDGEWORLD_SUBGRAPH_URL,
+      baseURL: BRIDGEWORLD_SUBGRAPH_URL,
     })
 
     const { data, ok } = await client.post('', {
