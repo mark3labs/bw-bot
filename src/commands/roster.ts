@@ -4,6 +4,8 @@ import { exit } from 'process'
 
 const command: GluegunCommand = {
   name: 'roster',
+  alias: 'r',
+  description: 'Show the accounts roster',
   run: async (toolbox) => {
     const {
       banner,

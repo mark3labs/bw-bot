@@ -3,6 +3,8 @@ import { exit } from 'process'
 
 const command: GluegunCommand = {
   name: 'info',
+  alias: 'i',
+  description: 'Show stats for a specific account',
   run: async (toolbox) => {
     const {
       banner,

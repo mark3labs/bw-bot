@@ -3,6 +3,8 @@ import { exit } from 'process'
 
 const command: GluegunCommand = {
   name: 'sell',
+  alias: 's',
+  description: 'Sell all $MAGIC from an account for ETH',
   run: async (toolbox) => {
     const {
       banner,

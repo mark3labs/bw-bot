@@ -2,6 +2,7 @@ import { Client, Intents } from 'discord.js'
 import { ethers } from 'ethers'
 import { http } from 'gluegun'
 import { Balances, ConsumableFloorPrices } from '../types'
+import { TREASURE_SUBGRAPH_URL } from './constants'
 import { consumables } from './contracts'
 
 export const getBalances = async (address: string): Promise<Balances> => {
@@ -40,7 +41,7 @@ export const shortAddr = (addr: string): string => {
 
 export const getFloorPrices =
   async (): Promise<ConsumableFloorPrices | null> => {
-    const client = http.create({ baseURL: process.env.TREASURE_SUBGRAPH_URL })
+    const client = http.create({ baseURL: TREASURE_SUBGRAPH_URL })
 
     const { data, ok } = await client.post('', {
       query: `{

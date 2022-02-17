@@ -13,7 +13,7 @@ async function run(argv) {
       .src(__dirname)
       .plugins('./node_modules', { matching: 'bw-bot-*', hidden: true })
       .help() // provides default for help, h, --help, -h
-      .version() // provides default for version, v, --version, -v
+      .version(() => console.log('1.0')) // provides default for version, v, --version, -v
       .exclude([
         'meta',
         'strings',

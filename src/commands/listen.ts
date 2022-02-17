@@ -4,6 +4,7 @@ import { ethers, utils } from 'ethers'
 
 const command: GluegunCommand = {
   name: 'listen',
+  description: 'Start the Discord bot listener',
   run: async (toolbox) => {
     const {
       banner,

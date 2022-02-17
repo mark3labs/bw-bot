@@ -3,6 +3,7 @@ import { exit } from 'process'
 
 const command: GluegunCommand = {
   name: 'list-items',
+  description: 'List all items from an account for sale on the marketplace',
   run: async (toolbox) => {
     const {
       banner,

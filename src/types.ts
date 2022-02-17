@@ -28,3 +28,11 @@ export interface ConsumableFloorPrices {
   shards: ethers.BigNumber
   locks: ethers.BigNumber
 }
+
+export interface BWConfig {
+  mnemonic: string
+  rpc_url: string
+  discord_token: string
+  discord_id: string
+  [key: string]: string
+}

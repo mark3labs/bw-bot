@@ -3,6 +3,8 @@ import { exit } from 'process'
 
 const command: GluegunCommand = {
   name: 'quest',
+  alias: 'q',
+  description: 'Monitor and restart quests for an account',
   run: async (toolbox) => {
     const {
       banner,

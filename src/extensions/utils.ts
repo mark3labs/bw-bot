@@ -2,12 +2,23 @@ import { Client, Intents } from 'discord.js'
 import { ethers, utils } from 'ethers'
 import { GluegunToolbox } from 'gluegun'
 import { magicToken, barracks, consumables } from '../lib/contracts'
-import { Recruit, Balances, ConsumableFloorPrices } from '../types'
+import { Recruit, Balances, BWConfig } from '../types'
+import * as os from 'os'
+import * as path from 'path'
+import { BRIDGEWORLD_SUBGRAPH_URL } from '../lib/constants'
 
 module.exports = (toolbox: GluegunToolbox) => {
-  const { print, http } = toolbox
+  const {
+    print,
+    http,
+    config: { loadConfig },
+  } = toolbox
 
-  const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL)
+  const homedir = os.homedir()
+  const CONFIG_DIR = path.join(homedir, '.config', 'bwbot')
+  const bwCfg: BWConfig = loadConfig('bwbot', CONFIG_DIR)
+
+  const provider = new ethers.providers.JsonRpcProvider(bwCfg.rpc_url)
   const loadRecruits = async (amount: number): Promise<Recruit[]> => {
     const recruits: Recruit[] = []
 
@@ -21,11 +32,11 @@ module.exports = (toolbox: GluegunToolbox) => {
   // Load multiple recruits
   const loadRecruit = async (account: number): Promise<Recruit> => {
     let wallet
-    if (process.env[`CUSTOM_${account}`]) {
-      wallet = new ethers.Wallet(process.env[`CUSTOM_${account}`])
+    if (bwCfg[`account_${account}`]) {
+      wallet = new ethers.Wallet(bwCfg[`account_${account}`])
     } else {
       wallet = ethers.Wallet.fromMnemonic(
-        process.env.MNEMONIC,
+        bwCfg.mnemonic,
         `m/44'/60'/0'/0/${account}`
       )
     }
@@ -77,7 +88,7 @@ module.exports = (toolbox: GluegunToolbox) => {
   // Fetch recruit ID
   const getRecruitId = async (address: string): Promise<number> => {
     const client = http.create({
-      baseURL: process.env.BRIDGEWORLD_SUBGRAPH_URL,
+      baseURL: BRIDGEWORLD_SUBGRAPH_URL,
     })
 
     const { data, ok } = await client.post('', {
@@ -98,8 +109,8 @@ module.exports = (toolbox: GluegunToolbox) => {
 
   const sendNotification = async (msg: string): Promise<void> => {
     const discord = new Client({ intents: Intents.FLAGS.GUILDS })
-    await discord.login(process.env.DISCORD_TOKEN)
-    const user = await discord.users.fetch(process.env.DISCORD_ID)
+    await discord.login(bwCfg.discord_token)
+    const user = await discord.users.fetch(bwCfg.discord_id)
     await user.send(msg)
   }
 
@@ -126,44 +137,6 @@ module.exports = (toolbox: GluegunToolbox) => {
     }
   }
 
-  const getFloorPrices = async (): Promise<ConsumableFloorPrices | null> => {
-    const client = http.create({ baseURL: process.env.TREASURE_SUBGRAPH_URL })
-
-    const { data, ok } = await client.post('', {
-      query: `{
-	      starlight: tokens(where: { name: "Essence of Starlight" }) {
-          name
-          id
-          floorPrice
-          tokenId
-        }
-        shards: tokens(where: { name: "Prism Shards" }) {
-          name
-          id
-          floorPrice
-          tokenId
-        }
-	      locks: tokens(where: { name: "Universal Lock" }) {
-          name
-          id
-          floorPrice
-          tokenId
-        }
-    }`,
-    })
-
-    if (ok) {
-      return {
-        starlight: ethers.BigNumber.from(
-          data['data']['starlight'][0].floorPrice
-        ),
-        shards: ethers.BigNumber.from(data['data']['shards'][0].floorPrice),
-        locks: ethers.BigNumber.from(data['data']['locks'][0].floorPrice),
-      }
-    }
-    return null
-  }
-
   const sleep = (ms: number): Promise<unknown> => {
     return new Promise((resolve) => setTimeout(resolve, ms))
   }
@@ -179,7 +152,6 @@ module.exports = (toolbox: GluegunToolbox) => {
     getRecruitId,
     sendNotification,
     getBalances,
-    getFloorPrices,
     sleep,
     shortAddr,
   }
