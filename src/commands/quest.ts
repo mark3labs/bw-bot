@@ -35,9 +35,6 @@ const command: GluegunCommand = {
     while (true) {
       spinner.text = 'Checking on recruit...'
       try {
-        print.info(
-          `Restarting quest for ${shortAddr(recruit.address)} - ${recruit.id}`
-        )
         const restarted = await quest.restartQuest(recruit)
         if (restarted) {
           print.success(
