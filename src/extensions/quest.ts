@@ -31,7 +31,7 @@ module.exports = (toolbox: GluegunToolbox) => {
 
   toolbox.quest = {
     // Restart Quest
-    restartQuest: async (recruit: Recruit): Promise<void> => {
+    restartQuest: async (recruit: Recruit): Promise<boolean> => {
       try {
         const endTime = moment.unix(await getEndtime(recruit.id))
         if (moment().isAfter(endTime)) {
@@ -39,7 +39,9 @@ module.exports = (toolbox: GluegunToolbox) => {
             .connect(recruit.wallet)
             .restartTokenQuests([recruit.id], [0], [1])
           await tx.wait()
+          return true
         }
+        return false
       } catch (e) {
         print.error(`Error: ${e.code}`)
         throw e
@@ -47,12 +49,13 @@ module.exports = (toolbox: GluegunToolbox) => {
     },
 
     // Collect Loot
-    collectLoot: async (recruit: Recruit): Promise<void> => {
+    collectLoot: async (recruit: Recruit): Promise<boolean> => {
       let readyToReveal
       try {
         readyToReveal = await quest.isQuestReadyToReveal(recruit.id)
       } catch (e) {
         readyToReveal = false
+        return false
       }
       if (readyToReveal) {
         try {
@@ -60,6 +63,7 @@ module.exports = (toolbox: GluegunToolbox) => {
             .connect(recruit.wallet)
             .revealTokensQuests([recruit.id])
           await tx.wait()
+          return true
         } catch (e) {
           print.error(`Error: ${e.code}`)
           throw e
