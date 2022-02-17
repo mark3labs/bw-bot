@@ -31,6 +31,7 @@ const command: GluegunCommand = {
       const messages = await marketplace.listItems(recruit)
       for (const m of messages) {
         print.info(m)
+        print.newline()
         await sendNotification(m)
       }
       spinner.succeed('Done!')

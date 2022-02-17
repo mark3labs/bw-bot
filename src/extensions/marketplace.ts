@@ -10,7 +10,7 @@ module.exports = (toolbox: GluegunToolbox) => {
   const { print } = toolbox
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const listItem = async (recruit: Recruit, item: any): Promise<string> => {
+  const listItem = async (recruit: Recruit, item: any): Promise<number> => {
     if (recruit.loot[item.shortName] > 0) {
       try {
         const floorPrices: ConsumableFloorPrices = await getFloorPrices()
@@ -24,7 +24,11 @@ module.exports = (toolbox: GluegunToolbox) => {
 
         const qtyToList = recruit.loot[item.shortName]
 
-        if (qtyToList === qtyListed) return
+        if (qtyToList === qtyListed) return 0
+
+        const basePrice = floorPrices[item.shortName]
+        const tenPercent = basePrice.mul(10).div(100)
+        const listPrice = basePrice.add(tenPercent)
 
         let tx
         if (qtyToList > qtyListed && qtyListed > 0) {
@@ -34,7 +38,7 @@ module.exports = (toolbox: GluegunToolbox) => {
               consumables.address,
               item.id,
               qtyToList,
-              floorPrices[item.shortName],
+              listPrice,
               moment().add(3, 'months').unix()
             )
           await tx.wait()
@@ -45,7 +49,7 @@ module.exports = (toolbox: GluegunToolbox) => {
               consumables.address,
               item.id,
               qtyToList,
-              floorPrices[item.shortName],
+              listPrice,
               moment().add(3, 'months').unix()
             )
           await tx.wait()
@@ -56,6 +60,7 @@ module.exports = (toolbox: GluegunToolbox) => {
         throw e
       }
     }
+    return 0
   }
 
   toolbox.marketplace = {
@@ -91,10 +96,11 @@ module.exports = (toolbox: GluegunToolbox) => {
         }
       }
 
-      const msgs = []
+      const msgs: string[] = []
       for (const i of ITEMS) {
-        const msg = await listItem(recruit, i)
-        msgs.push[msg]
+        const qty = await listItem(recruit, i)
+        if (qty === 0) continue
+        msgs.push(`Listed ${qty} ${i.emoji} ${i.name} for ${recruit.id}`)
       }
 
       return msgs
