@@ -10,7 +10,7 @@ const command: GluegunCommand = {
       parameters,
       marketplace,
       print,
-      utils: { loadRecruit },
+      utils: { loadRecruit, sendNotification },
     } = toolbox
 
     banner()
@@ -27,9 +27,18 @@ const command: GluegunCommand = {
     spinner.succeed('Loaded!')
 
     spinner.start('Listing items...')
-    await marketplace.listItems(recruit)
-    spinner.succeed('Done!')
-    exit(0)
+    try {
+      const messages = await marketplace.listItems(recruit)
+      for (const m of messages) {
+        print.info(m)
+        await sendNotification(m)
+      }
+      spinner.succeed('Done!')
+      exit(0)
+    } catch (e) {
+      spinner.fail('Failed to list items')
+      exit(1)
+    }
   },
 }
 

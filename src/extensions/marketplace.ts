@@ -1,6 +1,6 @@
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
-import { getFloorPrices, shortAddr, sendNotification } from '../lib/common'
+import { getFloorPrices } from '../lib/common'
 import { consumables, marketPlace } from '../lib/contracts'
 import { ConsumableFloorPrices, Recruit } from '../types'
 
@@ -10,7 +10,7 @@ module.exports = (toolbox: GluegunToolbox) => {
   const { print } = toolbox
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const listItem = async (recruit: Recruit, item: any): Promise<void> => {
+  const listItem = async (recruit: Recruit, item: any): Promise<string> => {
     if (recruit.loot[item.shortName] > 0) {
       try {
         const floorPrices: ConsumableFloorPrices = await getFloorPrices()
@@ -50,26 +50,16 @@ module.exports = (toolbox: GluegunToolbox) => {
             )
           await tx.wait()
         }
-        print.info(
-          `Listed ${qtyToList} ${item.emoji} ${
-            item.name
-          } for sale for ${shortAddr(recruit.address)} - ${recruit.id}`
-        )
-        await sendNotification(
-          `Listed \`${qtyToList}\` ${item.emoji} \`${
-            item.name
-          }\` for sale for \`${shortAddr(recruit.address)}\` - \`${
-            recruit.id
-          }\``
-        )
+        return qtyToList
       } catch (e) {
         print.error(`Error: ${e.code}`)
+        throw e
       }
     }
   }
 
   toolbox.marketplace = {
-    listItems: async (recruit: Recruit): Promise<void> => {
+    listItems: async (recruit: Recruit): Promise<string[]> => {
       const ITEMS = [
         {
           id: 8,
@@ -97,12 +87,17 @@ module.exports = (toolbox: GluegunToolbox) => {
           print.info('Approved!')
         } catch (e) {
           print.error(`Error: ${e.code}`)
+          throw e
         }
       }
 
+      const msgs = []
       for (const i of ITEMS) {
-        await listItem(recruit, i)
+        const msg = await listItem(recruit, i)
+        msgs.push[msg]
       }
+
+      return msgs
     },
   }
 }

@@ -1,4 +1,3 @@
-import { Client, Intents } from 'discord.js'
 import { ethers } from 'ethers'
 import { http } from 'gluegun'
 import { Balances, ConsumableFloorPrices } from '../types'
@@ -26,17 +25,6 @@ export const getBalances = async (address: string): Promise<Balances> => {
     shards,
     locks,
   }
-}
-
-export const sendNotification = async (msg: string): Promise<void> => {
-  const discord = new Client({ intents: Intents.FLAGS.GUILDS })
-  await discord.login(process.env.DISCORD_TOKEN)
-  const user = await discord.users.fetch(process.env.DISCORD_ID)
-  await user.send(msg)
-}
-
-export const shortAddr = (addr: string): string => {
-  return addr.substring(0, 6) + '...' + addr.substring(addr.length - 5)
 }
 
 export const getFloorPrices =

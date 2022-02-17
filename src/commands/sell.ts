@@ -1,3 +1,4 @@
+import { utils } from 'ethers'
 import { GluegunCommand } from 'gluegun'
 import { exit } from 'process'
 
@@ -11,7 +12,7 @@ const command: GluegunCommand = {
       parameters,
       print,
       magic,
-      utils: { loadRecruit },
+      utils: { loadRecruit, sendNotification, shortAddr },
     } = toolbox
 
     banner()
@@ -28,9 +29,24 @@ const command: GluegunCommand = {
     spinner.succeed('Loaded!')
 
     spinner.start('Selling $MAGIC...')
-    await magic.sell(recruit)
-    spinner.succeed('Done!')
-    exit(0)
+    try {
+      await magic.sell(recruit)
+      print.success(
+        `${shortAddr(recruit.address)} - ${recruit.id} sold ${utils.formatEther(
+          recruit.magicBalance
+        )} $MAGIC!`
+      )
+      await sendNotification(
+        `\`${shortAddr(recruit.address)}\` - \`${
+          recruit.id
+        }\` sold \`${utils.formatEther(recruit.magicBalance)}\` $MAGIC!`
+      )
+      spinner.succeed('Done!')
+      exit(0)
+    } catch (e) {
+      spinner.fail('Failed to sell $MAGIC')
+      exit(1)
+    }
   },
 }
 

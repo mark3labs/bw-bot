@@ -1,7 +1,5 @@
-import { utils } from 'ethers'
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
-import { shortAddr, sendNotification, getBalances } from '../lib/common'
 import { quest } from '../lib/contracts'
 import { Recruit } from '../types'
 
@@ -37,26 +35,14 @@ module.exports = (toolbox: GluegunToolbox) => {
       try {
         const endTime = moment.unix(await getEndtime(recruit.id))
         if (moment().isAfter(endTime)) {
-          print.info(
-            `Restarting quest for ${shortAddr(recruit.address)} - ${recruit.id}`
-          )
           const tx = await quest
             .connect(recruit.wallet)
             .restartTokenQuests([recruit.id], [0], [1])
           await tx.wait()
-          print.success(
-            `🔃 Restarted quest for ${shortAddr(recruit.address)} - ${
-              recruit.id
-            }`
-          )
-          await sendNotification(
-            `🔃 Restarted quest for \`${shortAddr(recruit.address)}\` - \`${
-              recruit.id
-            }\``
-          )
         }
       } catch (e) {
         print.error(`Error: ${e.code}`)
+        throw e
       }
     },
 
@@ -74,33 +60,9 @@ module.exports = (toolbox: GluegunToolbox) => {
             .connect(recruit.wallet)
             .revealTokensQuests([recruit.id])
           await tx.wait()
-          recruit.loot = await getBalances(recruit.address)
-          print.success(
-            `💰 Collected loot for ${shortAddr(recruit.address)} - ${
-              recruit.id
-            }`
-          )
-          print.success(
-            `🔷 = ${utils.formatEther(
-              recruit.ethBalance
-            )} 🪄= ${utils.formatEther(recruit.magicBalance)} 🌟 = ${
-              recruit.loot.starlight
-            } 💎 = ${recruit.loot.shards} 🔒 = ${recruit.loot.locks}`
-          )
-          await sendNotification(
-            `💰 Collected loot for \`${shortAddr(recruit.address)}\` - \`${
-              recruit.id
-            }\``
-          )
-          await sendNotification(
-            `🔷 = \`${utils.formatEther(
-              recruit.ethBalance
-            )}\` 🪄= \`${utils.formatEther(recruit.magicBalance)}\` 🌟 = \`${
-              recruit.loot.starlight
-            }\` 💎 = \`${recruit.loot.shards}\` 🔒 = \`${recruit.loot.locks}\``
-          )
         } catch (e) {
           print.error(`Error: ${e.code}`)
+          throw e
         }
       }
     },

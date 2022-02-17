@@ -1,7 +1,6 @@
 import { constants, utils } from 'ethers'
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
-import { shortAddr, sendNotification } from '../lib/common'
 import { magicToken, sushi } from '../lib/contracts'
 import { Recruit } from '../types'
 
@@ -31,21 +30,12 @@ module.exports = (toolbox: GluegunToolbox) => {
             moment().add(1, 'minute').unix()
           )
         await tx.wait()
-        print.success(
-          `${shortAddr(recruit.address)} - ${
-            recruit.id
-          } sold ${utils.formatEther(recruit.magicBalance)} $MAGIC!`
-        )
-        await sendNotification(
-          `\`${shortAddr(recruit.address)}\` - \`${
-            recruit.id
-          }\` sold \`${utils.formatEther(recruit.magicBalance)}\` $MAGIC!`
-        )
       } catch (e) {
         print.error(`Error: ${e.code}`)
         if (parameters.options.debug) {
           print.info(e)
         }
+        throw e
       }
     },
   }
