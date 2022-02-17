@@ -1,6 +1,7 @@
 import { constants, utils } from 'ethers'
 import { GluegunToolbox } from 'gluegun'
 import moment = require('moment')
+import { WETH_ADDRESS } from '../lib/constants'
 import { magicToken, sushi } from '../lib/contracts'
 import { Recruit } from '../types'
 
@@ -25,7 +26,7 @@ module.exports = (toolbox: GluegunToolbox) => {
           .swapExactTokensForETH(
             recruit.magicBalance,
             utils.parseEther('0.0001'),
-            [magicToken.address, '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'],
+            [magicToken.address, WETH_ADDRESS],
             recruit.address,
             moment().add(1, 'minute').unix()
           )

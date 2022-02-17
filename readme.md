@@ -2,6 +2,12 @@
 
 A siimple CLI Bot for running Bridgeworld Recruits
 
+# Disclaimer
+
+This bot is provided **WITHOUT** support or guarantees of any kind.
+
+**USE AT YOUR OWN RISK**
+
 # Getting started
 
 Follow these steps to get up and running:
@@ -23,4 +29,3 @@ $ bw-bot listen # Starts a Discord listener to receive commands
 # License
 
 MIT - see LICENSE
-
