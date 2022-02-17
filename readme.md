@@ -1,23 +1,23 @@
-# bw-bot CLI
+# Bridgeworld Recruit Bot
 
-A CLI for bw-bot.
+A siimple CLI Bot for running Bridgeworld Recruits
 
-## Customizing your CLI
+# Getting started
 
-Check out the documentation at https://github.com/infinitered/gluegun/tree/master/docs.
-
-## Publishing to NPM
-
-To package your CLI up for NPM, do this:
+Follow these steps to get up and running:
 
 ```shell
-$ npm login
-$ npm whoami
-$ npm test
+$ pnpm i
 
-$ npm run build
+$ npm link
 
-$ npm publish
+$ bw-bot init
+
+$ bw-bot start <account> # Initializes an account by purchasing a recruit and then starting the initial quest
+
+$ bw-bot quest <account> # Starts and monitors a quest loop
+
+$ bw-bot listen # Starts a Discord listener to receive commands
 ```
 
 # License
