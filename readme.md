@@ -23,6 +23,10 @@ $ bw-bot start <account> # Initializes an account by purchasing a recruit and th
 
 $ bw-bot quest <account> # Starts and monitors a quest loop
 
+$ bw-bot list-items <account> # Lists all Consumables owned by the account on the Marketplace
+
+$ bw-bot sell <account> # Sells all $MAGIC owned by an account for ETH
+
 $ bw-bot listen # Starts a Discord listener to receive commands
 ```
 
