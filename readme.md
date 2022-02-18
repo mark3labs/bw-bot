@@ -2,6 +2,12 @@
 
 A siimple CLI Bot for running Bridgeworld Recruits
 
+# Donations Welcome
+
+If you feel this has brought you some value feel free to donate ETH or $MAGIC
+
+**ETH Address:** `0x146cfED833cC926B16B0dA9257E8A281c2add9F3` or `edzynda.eth`
+
 # Disclaimer
 
 This bot is provided **WITHOUT** support or guarantees of any kind.
